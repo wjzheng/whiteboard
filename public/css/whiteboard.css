@@ -289,3 +289,13 @@ ol,ul {
   width: 110px;
   height: 50px;
 }
+
+#toolbar {
+  overflow: hidden;
+}
+
+#toolbar li {
+  float: right;
+  padding: 3px;
+  margin: 2px;
+}

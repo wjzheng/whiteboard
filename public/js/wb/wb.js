@@ -44,7 +44,14 @@ $(function() {
   // handle upload request
   var uploader = new qq.FineUploader({
     element : $('#uploadImg')[0],
-    debug : true,
+    text : {
+      uploadButton : "Upload image"
+    },
+    validation : {
+      allowedExtensions : [ "jpg", "gif", "png", "bmp", "jpeg" ],
+      sizeLimit : 5 * 1024 * 1024
+    },
+    listElement : $('#imageList')[0],
     request : {
       endpoint : "/ajaxUploader"
     },
@@ -52,7 +59,6 @@ $(function() {
       onComplete : function(id, fileName, responseJSON) {
         wb.loadImage("/uploads/" + fileName);
       },
-
       onError : function(event, id, fileName, reason) {
         qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
       }
