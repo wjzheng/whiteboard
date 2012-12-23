@@ -1,33 +1,32 @@
 $(function() {
+
   var socket = io.connect();
-
-  $("#nick").focus();
-
-  $("#set_nickname").submit(function(evt) {
-    socket.emit("nickname", $("#nick").val(), function(set) {
-      if (!set) {
-        $("#nickname").hide();
-        wb.init("#whiteboard", {
-          width : 1000,
-          height : 450,
-          imagePos : "center",
-          toolbarPos : "left",
-          moveImage : true
-        });
-        wbMsgClient.init(socket);
-        $("#online_users").show();
-        $("#whiteboard").show();
-        $("#toolbar").show();
-      } else {
-        $("#nickname_err").css("visibility", "visible");
-      }
-    });
-    return false;
+  wb.init("#whiteboard", {
+    width : 1000,
+    height : 450,
+    imagePos : "center",
+    toolbarPos : "left",
+    moveImage : true
   });
+  // init wb client
+  var username = $("#username").text();
+  wbMsgClient.init(socket, username);
 
   // clear wb
   $("#clear_wb").click(function(evt) {
     wb.clear();
+  });
+
+  // toggle online user panel
+  $("#onlineUserBtn").click(function(evt) {
+    var btn = $(this);
+    var h = btn.height();
+    var pos = btn.position();
+    $("#onlineUsers").css({
+      top : pos.top + h + 5,
+      left : pos.left
+    });
+    $("#onlineUsers").toggle();
   });
 
   // save image
@@ -40,5 +39,23 @@ $(function() {
   $("#wb_images").delegate(".imageItem", "click", function() {
     var filePath = $(this).data("filePath");
     wb.loadImage(filePath);
+  });
+
+  // handle upload request
+  var uploader = new qq.FineUploader({
+    element : $('#uploadImg')[0],
+    debug : true,
+    request : {
+      endpoint : "/ajaxUploader"
+    },
+    callbacks : {
+      onComplete : function(id, fileName, responseJSON) {
+        wb.loadImage("/uploads/" + fileName);
+      },
+
+      onError : function(event, id, fileName, reason) {
+        qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+      }
+    }
   });
 });

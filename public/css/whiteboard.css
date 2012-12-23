@@ -289,22 +289,3 @@ ol,ul {
   width: 110px;
   height: 50px;
 }
-
-#nickname {
-  border: 1px solid #CCC;
-  padding: 30px 10px;
-  text-align: center;
-}
-
-#nick {
-  border: 1px solid #CCC;
-  padding: 10px;
-}
-
-#nickname_err {
-  visibility: hidden;
-}
-
-#toolbar {
-  display: none;
-}

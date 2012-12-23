@@ -1,39 +1,31 @@
-var io = require('socket.io');
 var sys = require("sys");
 var fs = require("fs");
 var mkdir = require("mkdirp");
 
-exports.initWbMsgServer = function(app) {
+exports.initWbMsgServer = function(io) {
   var userCount = 0, imageCount = 0;
   var onlineUsers = {};
-  io = io.listen(app);
   io.sockets.on('connection', function(socket) {
 
-    socket.on('nickname', function(nick, fn) {
-      if (onlineUsers[nick]) {
-        fn(true);
-      } else {
-        fn(false);
-        onlineUsers[nick] = socket.nickname = nick;
-        socket.broadcast.emit('conn', nick);
-        io.sockets.emit('nicknames', onlineUsers);
-      }
+    socket.on("conn", function(username) {
+      onlineUsers[username] = socket.username = username;
+      io.sockets.emit('onlineusers', onlineUsers);
+      socket.broadcast.emit('announcement', username + " online.");
     });
-
     // listen client request
     socket.on('wb_client_msg', function(msg) {
-      var nickname = this.nickname;
+      var username = this.username;
       socket.broadcast.emit('wb_server_msg', {
         data : msg,
-        from : nickname
+        from : username
       })
     });
 
     // handle save image request
     socket.on('save_image', function(imageContent) {
-      var nickname = this.nickname;
+      var username = this.username;
       var base64Data = imageContent.replace(/^data:image\/png;base64,/, "");
-      var imageFolder = "./public/files/" + nickname + "/wb/";
+      var imageFolder = "./public/files/" + username + "/wb/";
       mkdir.sync(imageFolder, "0755");
       var imagePath = imageFolder + ++imageCount + ".png";
       var thumbnailPath = imageFolder + imageCount + "-small.png"
@@ -52,8 +44,8 @@ exports.initWbMsgServer = function(app) {
               });
             } else {
               socket.emit('save_img_response', {
-                thumbnailPath : "/files/" + nickname + "/wb/" + imageCount + "-small.png",
-                imagePath : "/files/" + nickname + "/wb/" + imageCount + ".png"
+                thumbnailPath : "/files/" + username + "/wb/" + imageCount + "-small.png",
+                imagePath : "/files/" + username + "/wb/" + imageCount + ".png"
               });
             }
           });
@@ -66,11 +58,11 @@ exports.initWbMsgServer = function(app) {
     });
 
     socket.on('disconnect', function() {
-      var nickname = socket.nickname;
+      var username = socket.username;
       // broadcast other client that user has left
-      delete onlineUsers[nickname];
-      socket.broadcast.emit('left', nickname);
-      socket.broadcast.emit('nicknames', onlineUsers);
+      delete onlineUsers[username];
+      socket.broadcast.emit('announcement', username + " offline.");
+      socket.broadcast.emit('onlineusers', onlineUsers);
     });
   });
 }

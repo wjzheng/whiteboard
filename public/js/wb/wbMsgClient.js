@@ -11,20 +11,19 @@
 
     remoteIsEraser : {},
 
-    init : function(socket) {
+    init : function(socket, username) {
       var that = this;
       this.socket = socket;
-      this.socket.on('conn', function(nickname) {
-        $("#sys_msg").html(nickname + " has online!");
+      this.socket.emit("conn", username);
+
+      this.socket.on('announcement', function(msg) {
+        $("#globalNotice").show().html(msg).fadeOut(2000);
       });
-      this.socket.on('left', function(nickname) {
-        console.log(nickname);
-        $("#sys_msg").html(nickname + " has offline!");
-      });
-      this.socket.on('nicknames', function(onlineUsers) {
-        $('#online_users').empty().append($('<span>Online: </span>'));
+
+      this.socket.on('onlineusers', function(onlineUsers) {
+        $('#onlineUsers').empty();
         for ( var user in onlineUsers) {
-          $('#online_users').append($('<span class="online_user"></span>').text(onlineUsers[user]));
+          $('#onlineUsers').append($('<span class="online_user"></span>').text(onlineUsers[user]));
         }
       });
       this.socket.on('wb_server_msg', function(data) {

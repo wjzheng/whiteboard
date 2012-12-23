@@ -1,0 +1,15 @@
+<div class="login-form">
+  <form action="/login" method="post">
+    <h1>Sign in</h1>
+    <div class="formbody">
+      <%=error%><label for="username">Username<br> <input class="text" autofocus="autofocus" type="text" id="username" name="username"></input></label>
+      <label for="password">Password<br> <input class="text" autocomplete="disabled" type="password" id="password" name="password"></input></label>
+      <label class="submitBtn"><input type="submit" value="Sign in"></label>
+    </div>
+  </form>
+</div>
+<script type="text/javascript">
+  $(function() {
+    $("#singupBtn").show();
+  })
+</script>
