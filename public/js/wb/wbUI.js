@@ -495,45 +495,11 @@
 
     loadImage : function(imageSrc) {
       wb.beforeDraw();
-      wb.wbMask.css("display", "block");
-      var image = new Image();
-      image.onload = function() {
-        wbProcessor.drawImg(new wbRequests.DrawImageRequest(image));
-        wb.wbMask.css("display", "none");
-      }
-      image.onerror = function() {
-        wb.wbMask.css("display", "none");
-        console.error("image :" + imageSrc + " isn't existed!")
-      }
+      wbProcessor.drawImg(new wbRequests.DrawImageRequest(imageSrc));
       // add move image event
       if (wb.options.moveImage) {
-        var coordinates = [ 0, 0 ];
-        var mousePrevX = 0, mousePrevY = 0;
-        wb.canvas.on(EVT_MOVE, function(evt) {
-          var mouseX = 0, mouseY = 0;
-          coordinates = wb.getCoordinates(evt);
-          var imageObj = wbProcessor.imageObj;
-          var flag = intersect(imageObj.width, imageObj.height, imageObj.left, imageObj.top, coordinates[0], coordinates[1]);
-          if (flag) {
-            wb.canvas.addClass(MOVE_IMG);
-            if (wb.mouseDown) {
-              wbProcessor.moveImage(new wbRequests.MoveImageRequest(mousePrevX, mousePrevY, coordinates[0], coordinates[1]));
-            }
-            mousePrevX = coordinates[0], mousePrevY = coordinates[1];
-          } else {
-            wb.canvas.removeClass(MOVE_IMG);
-          }
-        });
 
-        wb.canvas.on(EVT_START, function() {
-          wb.mouseDown = true;
-        });
-
-        wb.canvas.on(EVT_END, function() {
-          wb.mouseDown = false;
-        });
       }
-      image.src = imageSrc;
       wbUndoManager.saveState();
     },
 
