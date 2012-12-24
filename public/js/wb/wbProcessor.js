@@ -1,4 +1,12 @@
 (function() {
+  var hasTouch = 'ontouchstart' in window;
+  // constants
+  var PENCIL_ACTIVE = "pencil_active", BTN_CURVE = "btn_curve",
+  // CSS
+  BTN_SELECTED = "wb_btn_selected", RECTANGLE_ACTIVE = "rectangle_active", OVAL_ACTIVE = "oval_active", ERASER_ACTIVE = "eraser_active", MOVE_IMG = "move_image",
+  // event
+  EVT_START = hasTouch ? "touchstart" : "mousedown", EVT_MOVE = hasTouch ? "touchmove" : "mousemove", EVT_END = hasTouch ? "touchend" : "mouseup";
+  EVT_KEYDOWN = "keydown";
 
   window.wbRequests = {
 
@@ -102,9 +110,9 @@
       this.color = color || wbProcessor.color;
     },
 
-    DrawImageRequest : function(image) {
+    DrawImageRequest : function(imageSrc) {
       this.cmd = wbRequests.CMD.DRAW_IMG;
-      this.image = image;
+      this.imageSrc = imageSrc;
     },
 
     MoveImageRequest : function(mousePrevX, mousePrevY, mouseX, mouseY) {
@@ -159,7 +167,7 @@
 
     tmpCanvas : {},
 
-    imageObj : {},
+    currentImage : null,
 
     init : function() {
       this.lineWidth = wb.options.lineWidth;
@@ -221,31 +229,66 @@
     },
 
     drawImg : function(request) {
-      wbProcessor.gatherPosition(request);
-      var image = request.image;
-      var imageSize = wbProcessor.adjustImageSize(image);
-      wbProcessor.clearCanvas();
-      if (wb.options.imagePos === "center") {
-        wbProcessor.context_O.drawImage(image, imageSize.left, imageSize.top, imageSize.width, imageSize.height);
-      } else {
-        wbProcessor.context_O.drawImage(image, 0, 0, imageSize.width, imageSize.height);
+      wbMsgClient.sendRequest(request);
+      var imageSrc = request.imageSrc;
+      var image = new Image();
+      var imageSize = null;
+      image.onload = function() {
+        var width = image.width, height = image.height;
+        var imageSize = wbProcessor.adjustImageSize(width, height);
+        wbProcessor.clearCanvas();
+        // draw image to canvas
+        if (wb.options.imagePos === "center") {
+          wbProcessor.context_O.drawImage(image, imageSize.left, imageSize.top, imageSize.width, imageSize.height);
+        } else {
+          wbProcessor.context_O.drawImage(image, 0, 0, imageSize.width, imageSize.height);
+        }
+        // bind image move event
+        if (wb.options.moveImage) {
+          var coordinates = [ 0, 0 ];
+          var mousePrevX = 0, mousePrevY = 0;
+          wb.canvas.on(EVT_MOVE, function(evt) {
+            var mouseX = 0, mouseY = 0;
+            coordinates = wb.getCoordinates(evt);
+            var flag = intersect(imageSize.width, imageSize.height, imageSize.left, imageSize.top, coordinates[0], coordinates[1]);
+            if (flag) {
+              wb.canvas.addClass(MOVE_IMG);
+              if (wb.mouseDown) {
+                wbProcessor.moveImage(new wbRequests.MoveImageRequest(mousePrevX, mousePrevY, coordinates[0], coordinates[1]));
+              }
+              mousePrevX = coordinates[0], mousePrevY = coordinates[1];
+            } else {
+              wb.canvas.removeClass(MOVE_IMG);
+            }
+          });
+
+          wb.canvas.on(EVT_START, function() {
+            wb.mouseDown = true;
+          });
+
+          wb.canvas.on(EVT_END, function() {
+            wb.mouseDown = false;
+          });
+
+          wbProcessor.currentImage = {
+            "src" : image.src,
+            "width" : imageSize.width,
+            "height" : imageSize.height,
+            "top" : imageSize.top,
+            "left" : imageSize.left,
+            "image" : image
+          };
+        }
       }
-      wbUndoManager.clearHistory();
-      if (wb.options.moveImage) {
-        this.imageObj = {
-          "src" : image.src,
-          "width" : imageSize.width,
-          "height" : imageSize.height,
-          "top" : imageSize.top,
-          "left" : imageSize.left,
-          "image" : image
-        };
+      image.onerror = function() {
+        console.error("image :" + imageSrc + " isn't existed!")
       }
+      image.src = imageSrc;
     },
 
-    adjustImageSize : function(image) {
-      var imgWidth = image.width;
-      var imgHeight = image.height;
+    adjustImageSize : function(width, height) {
+      var imgWidth = width;
+      var imgHeight = height;
       var imageSize = {
         top : 0,
         left : 0,
@@ -505,14 +548,14 @@
 
     moveImage : function(request) {
       wbMsgClient.sendRequest(request);
-      var imageObj = this.imageObj;
-      var mouseX = request.mouseX, mouseY = request.mouseY, mousePrevX = request.mousePrevX, mousePrevY = request.mousePrevY;
       wbProcessor.clearCanvas();
-      var left = imageObj.left + mouseX - mousePrevX;
-      var top = imageObj.top + mouseY - mousePrevY;
-      wbProcessor.context_O.drawImage(imageObj.image, left, top, imageObj.width, imageObj.height);
-      imageObj.left = left;
-      imageObj.top = top;
+      var currentImage = this.currentImage;
+      var mouseX = request.mouseX, mouseY = request.mouseY, mousePrevX = request.mousePrevX, mousePrevY = request.mousePrevY;
+      var left = currentImage.left + mouseX - mousePrevX;
+      var top = currentImage.top + mouseY - mousePrevY;
+      wbProcessor.context_O.drawImage(currentImage.image, left, top, currentImage.width, currentImage.height);
+      currentImage.left = left;
+      currentImage.top = top;
     },
 
     endDraw : function(request) {

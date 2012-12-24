@@ -165,14 +165,7 @@
           wbProcessor.redo(remoteRequest);
           break;
         case wbRequests.CMD.DRAW_IMG:
-          wbUndoManager.saveState();
-          var imgSrc = remoteRequest.image;
-          var image = new Image();
-          image.onload = function() {
-            remoteRequest.image = image;
-            wbProcessor.drawImg(remoteRequest);
-          }
-          image.src = imgSrc;
+          wbProcessor.drawImg(remoteRequest);
           break;
         case wbRequests.CMD.MOVE_IMG:
           wbProcessor.moveImage(remoteRequest);
@@ -242,11 +235,11 @@
         }
         break;
       case wbRequests.CMD.DRAW_IMG:
-        ret.push(new wbRequests.DrawImageRequest(body));
+        ret.push(new wbRequests.DrawImageRequest(data.imageSrc));
         break;
       case wbRequests.CMD.MOVE_IMG:
-        var p = body.split(",");
-        ret.push(new wbRequests.MoveImageRequest(parseInt(p[0]), parseInt(p[1]), parseInt(p[2]), parseInt(p[3])));
+        var prevX = data.mousePrevX, preY = data.mousePrevY, moveToX = data.mouseX, moveToY = data.mouseY;
+        ret.push(new wbRequests.MoveImageRequest(prevX, preY, moveToX, moveToY));
         break;
       case wbRequests.CMD.DRAW_TEXT:
         var text = data.text;
