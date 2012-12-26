@@ -1,15 +1,6 @@
-<div class="signUp-form">
-  <form action="/register" method="post">
-    <h1>Sign up</h1>
-    <div class="formbody">
-      <label for="username">Username<br> <input class="text" autofocus="autofocus" type="text" id="username" name="username"></input></label> <label
-        for="password">Password<br> <input class="text" autocomplete="disabled" type="password" id="password" name="password"></input></label> <label
-        class="submitBtn"><input type="submit" value="Join"></label>
-    </div>
-  </form>
-</div>
-<script type="text/javascript">
-  $(function() {
-    //alert("xxx");
-  })
-</script>
+<form class="form-signin" action="/register" method="post">
+  <h2 class="form-signin-heading">Please sign up</h2>
+  <input type="text" class="input-block-level" placeholder="Username" name="username"> <input type="password" class="input-block-level"
+    placeholder="Password" name="password">
+  <button class="btn btn-large btn-primary" type="submit">Join</button>
+</form>
