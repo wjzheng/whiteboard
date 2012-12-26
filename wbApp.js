@@ -60,5 +60,5 @@ app.on("close", function(err) {
   });
 });
 
-app.listen(80);
-console.log('Webchat server listening on port 80');
+app.listen(3000);
+console.log('Webchat server listening on port 3000');

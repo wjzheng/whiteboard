@@ -22,3 +22,99 @@
   margin-bottom: 15px;
   padding: 7px 9px;
 }
+
+[class ^="wb-icon-"],[class *="wb-icon-"] {
+  display: inline-block;
+  width: 35px;
+  height: 33px;
+  margin-top: 1px;
+  *margin-right: .3em;
+  vertical-align: text-top;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.wb-icon-sketch {
+  background-image: url(../img/sketch.png);
+}
+
+.wb-icon-selected {
+  background-color: red;
+}
+
+.wb-icon-sketch {
+  background-image: url(../img/sketch.png);
+}
+
+.wb-icon-line {
+  background-image: url(../img/line.png);
+}
+
+.wb-icon-rectFrame {
+  background-image: url(../img/rectFrame.png);
+}
+
+.wb-icon-rectFilled {
+  background-image: url(../img/rectFilled.png);
+}
+
+.wb-icon-ovalFrame {
+  background-image: url(../img/ovalFrame.png);
+}
+
+.wb-icon-ovalFilled {
+  background-image: url(../img/ovalFilled.png);
+}
+
+.wb-icon-font {
+  background-image: url(../img/font.png);
+}
+
+.wb-icon-picture {
+  background-image: url(../imgpicture.png);
+}
+
+.wb-icon-eraser {
+  background-image: url(../img/eraser.png);
+}
+
+.wb-icon-color {
+  background-image: url(../img/color.png);
+}
+
+.wb-icon-undo {
+  background-image: url(../img/undo.png);
+}
+
+.wb-icon-lineWidth {
+  background-image: url(../img/lineWidth.png);
+}
+
+.wbCanvas {
+  width: 1070px;
+  height: 432px;
+  text-align: center;
+  position: relative;
+  top: 0;
+  left: 0;
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-pack: center;
+  -webkit-box-align: center;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-pack: center;
+  -moz-box-align: center;
+  display: -o-box;
+  -o-box-orient: horizontal;
+  -o-box-pack: center;
+  -o-box-align: center;
+  display: -ms-box;
+  -ms-box-orient: horizontal;
+  -ms-box-pack: center;
+  -ms-box-align: center;
+  display: box;
+  box-orient: horizontal;
+  box-pack: center;
+  box-align: center;
+}

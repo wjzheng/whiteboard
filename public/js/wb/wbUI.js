@@ -11,8 +11,6 @@
 
   window.wb = {
     options : {
-      width : 800,
-      height : 450,
       fontSize : 16,
       fontFamily : "Comic Sans MS",
       lineWidth : 3,
@@ -38,8 +36,8 @@
       wbProcessor.init();
       wbUndoManager.init(wb.options.undoSteps);
       this.wbContainer.show();
-      this.wbOffset = this.wbContainer.find(".canvas").offset();
-      this.wbPos = this.wbContainer.find(".canvas").position();
+      this.wbOffset = this.wbContainer.find(".wbCanvas").offset();
+      this.wbPos = this.wbContainer.find(".wbCanvas").position();
     },
 
     _prepareParams : function(wbId, options) {
@@ -56,28 +54,21 @@
     },
 
     _renderUI : function() {
-      var width = this.options.width;
-      var height = this.options.height;
+      var canvasFullWidth = this.wbContainer.find(".wbCanvas").width();
+      var canvasFullHeight = this.wbContainer.find(".wbCanvas").height();
+      var width = this.options.width || canvasFullWidth;
+      var height = this.options.height || canvasFullHeight;
       TCC.find("canvas").each(function(c) {
         c.height = height;
         c.width = width;
       });
-      TCC.find(".canvas").css({
-        "height" : height + "px",
-        "background-color" : this.options.backgroundColor
-      });
-      // 2 is border width
-      this.wbContainer.css({
-        "width" : width + 2 + "px"
-      });
-      this.initToolbar();
       this.initColorPicker();
       this.initFontSelector();
     },
 
     _bindUI : function() {
       // bind event to toolbar buttons
-      TCC.find(".wb_toolbar").delegate("click", ".wb_btn", function(evt) {
+      TCC.find(".btn-group").delegate("click", "button", function(evt) {
         var target = evt.currentTarget;
         var menuId = target.attr("id");
         wb.beforeDraw(menuId);
@@ -101,7 +92,8 @@
           wb.activeOval(true);
           break;
         case "font":
-          wb.activeFontSelector(target);
+          $("#font_menu").popover('toggle');
+          //wb.activeFontSelector(target);
           break;
         case "eraser":
           wb.activeEraser();
@@ -134,28 +126,6 @@
       TCC.find(document).on(EVT_KEYDOWN, wb.addShortcut);
     },
 
-    initToolbar : function() {
-      if (this.options.toolbarPos === "left") {
-        var toolbar = TCC.find(".wb_toolbar");
-        toolbar.css({
-          "width" : this.options.toolbarHeight + "px",
-          "height" : this.options.height + "px",
-          "float" : "left"
-        });
-        this.wbContainer.css({
-          "width" : this.options.width + this.options.toolbarHeight + 3 + "px"
-        });
-        TCC.find(".canvas").css({
-          "float" : "right",
-          "border-bottom-width" : 1,
-          "border-left-width" : 0
-        });
-        TCC.find(".wb_toolbar .wb_btn").each(function(el) {
-          TCC.create(el).addClass("left");
-        });
-      }
-    },
-
     initColorPicker : function() {
       TCC.find("#color").colorPicker({
         parentContainer : wb.wbContainer,
@@ -175,24 +145,24 @@
       TCC.find("#font_family").val(defFontFamily);
       TCC.find("#font_menu").delegate("click", "LI", function(evt) {
         var target = evt.currentTarget;
-        target.toggleClass(BTN_SELECTED);
+        target.toggleClass("active");
         var id = target.attr("id");
         if (id == "font_boldBtn") {
-          if (target.hasClass(BTN_SELECTED)) {
+          if (target.hasClass("active")) {
             textArea.css("font-weight", "bold");
           } else {
             textArea.css("font-weight", "normal");
           }
         }
         if (id == "font_italicBtn") {
-          if (target.hasClass(BTN_SELECTED)) {
+          if (target.hasClass("active")) {
             textArea.css("font-style", "italic");
           } else {
             textArea.css("font-style", "normal");
           }
         }
         if (id == "font_underlineBtn") {
-          if (target.hasClass(BTN_SELECTED)) {
+          if (target.hasClass("active")) {
             textArea.css("text-decoration", "underline");
           } else {
             textArea.css("text-decoration", "none");
@@ -288,7 +258,7 @@
         fontSelector.show();
       } else {
         fontSelector.hide();
-        target.removeClass(BTN_SELECTED);
+        target.removeClass("active");
         wb.canvas.on(EVT_END, wb.afterDraw);
       }
     },
@@ -439,15 +409,15 @@
       wbUndoManager.saveState();
       var text = TCC.find("#font_textarea").val();
       if (TCC.trim(text) !== "") {
-        var isItalic = TCC.find("#font_italicBtn").hasClass(BTN_SELECTED);
+        var isItalic = TCC.find("#font_italicBtn").hasClass("active");
         var fontSize = parseInt(TCC.find("#font_size").val());
         var fontFamily = TCC.find("#font_family").val();
         if (isNaN(fontSize)) {
           fontSize = wb.options.fontSize;
         }
         var color = TCC.find("#whiteboard .colorPickerBtn").attr("color");
-        var isBold = TCC.find("#font_boldBtn").hasClass(BTN_SELECTED);
-        var isUnderLine = TCC.find("#font_underlineBtn").hasClass(BTN_SELECTED);
+        var isBold = TCC.find("#font_boldBtn").hasClass("active");
+        var isUnderLine = TCC.find("#font_underlineBtn").hasClass("active");
         wbProcessor.drawText(new wbRequests.DrawTextRequest(left, top, text, fontSize, fontFamily, isItalic, isBold, isUnderLine, color));
       }
     },
@@ -456,13 +426,13 @@
       if (menu === "color" || menu === "lineWidth" || menu === "undo") {
         return;
       }
-      var selectedBtn = TCC.find("." + BTN_SELECTED);
+      var selectedBtn = TCC.find("." + "active");
       if (menu && menu == selectedBtn.attr("id")) {
         return;
       }
       TCC.find(".wb_toolbar_menu").hide();
-      TCC.find(".wb_btn").removeClass(BTN_SELECTED);
-      TCC.find("#" + menu).addClass(BTN_SELECTED);
+      TCC.find(".btn-group>button.btn").removeClass("active");
+      TCC.find("#" + menu).addClass("active");
       wb.canvas.unbind();
       wb.canvas.removeClass(ERASER_ACTIVE);
       wb.canvas.removeClass(RECTANGLE_ACTIVE);

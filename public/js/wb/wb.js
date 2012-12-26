@@ -2,8 +2,8 @@ $(function() {
 
   var socket = io.connect();
   wb.init("#whiteboard", {
-    width : 1000,
-    height : 450,
+    // width : 800,
+    // height : 320,
     imagePos : "center",
     toolbarPos : "left",
     moveImage : true
@@ -42,26 +42,26 @@ $(function() {
   });
 
   // handle upload request
-  var uploader = new qq.FineUploader({
-    element : $('#uploadImg')[0],
-    text : {
-      uploadButton : "Upload image"
-    },
-    validation : {
-      allowedExtensions : [ "jpg", "gif", "png", "bmp", "jpeg" ],
-      sizeLimit : 5 * 1024 * 1024
-    },
-    listElement : $('#imageList')[0],
-    request : {
-      endpoint : "/ajaxUploader"
-    },
-    callbacks : {
-      onComplete : function(id, fileName, responseJSON) {
-        wb.loadImage("/uploads/" + fileName);
-      },
-      onError : function(event, id, fileName, reason) {
-        qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
-      }
-    }
-  });
+  // var uploader = new qq.FineUploader({
+  // element : $('#uploadImg')[0],
+  // text : {
+  // uploadButton : "Upload image"
+  // },
+  // validation : {
+  // allowedExtensions : [ "jpg", "gif", "png", "bmp", "jpeg" ],
+  // sizeLimit : 5 * 1024 * 1024
+  // },
+  // listElement : $('#uploadImageList')[0],
+  // request : {
+  // endpoint : "/ajaxUploader"
+  // },
+  // callbacks : {
+  // onComplete : function(id, fileName, responseJSON) {
+  // wb.loadImage("/uploads/" + fileName);
+  // },
+  // onError : function(event, id, fileName, reason) {
+  // qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+  // }
+  // }
+  // });
 });
