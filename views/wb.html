@@ -1,7 +1,7 @@
 <div class="well well-small" id="whiteboard">
   <div class="well well-small pull-right wbCanvas">
     <canvas id="canvas_o"></canvas>
-    <canvas id="canvas_t" style="position: absolute; top: 0px; left: 0px;"></canvas>
+    <canvas id="canvas_t" style="position: absolute; top: 9px; left: 9px;"></canvas>
   </div>
   <div class="btn-group btn-group-vertical">
     <button id="sketch" type="button" class="btn btn-small active">
@@ -22,47 +22,9 @@
     <button id="ovalFilled" type="button" class="btn btn-small">
       <i class="wb-icon-ovalFilled"></i>
     </button>
-    <button id="font" type="button" class="btn btn-small" rel="popover" data-placement="right" data-content="And here's some amazing content. It's very engaging. right?" data-original-title="A Title">
+    <button id="font" type="button" class="btn btn-small">
       <i class="wb-icon-font"></i>
     </button>
-    <div id="font_menu" class="popover fade right">
-      <div class="popover-inner">
-        <h3 class="popover-title">Select font</h3>
-        <div class="popover-content">
-          <div>
-            <select id="font_family">
-              <option value="Arial Black">Arial Black</option>
-              <option value="Comic Sans MS">Comic Sans MS</option>
-              <option value="Courier">Courier</option>
-              <option value="System">System</option>
-              <option value="Times New Roman">Times New Roman</option>
-              <option value="Trebuchet MS">Trebuchet MS</option>
-              <option value="Verdana">Verdana</option>
-            </select>
-          </div>
-          <div>
-            <select id="font_size">
-              <option value="10">10</option>
-              <option value="12">12</option>
-              <option value="14">14</option>
-              <option value="16">16</option>
-              <option value="18">18</option>
-              <option value="20">20</option>
-              <option value="22">22</option>
-              <option value="24">24</option>
-              <option value="26">26</option>
-              <option value="28">28</option>
-              <option value="30">30</option>
-            </select>
-            <div class="btn-group pull-right">
-              <button class="btn" id="font_boldBtn">B</button>
-              <button class="btn" id="font_italicBtn">I</button>
-              <button class="btn" id="font_underlineBtn">U</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <button id="eraser" type="button" class="btn btn-small">
       <i class="wb-icon-eraser"></i>
     </button>
@@ -77,23 +39,66 @@
     </button>
   </div>
 </div>
+<div id="font_menu" class="popover fade right in" style="display: none;">
+  <div class="arrow"></div>
+  <div class="popover-inner">
+    <div class="popover-content">
+      <div>
+        <select id="font_family">
+          <option value="Arial Black">Arial Black</option>
+          <option value="Comic Sans MS">Comic Sans MS</option>
+          <option value="Courier">Courier</option>
+          <option value="System">System</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Trebuchet MS">Trebuchet MS</option>
+          <option value="Verdana">Verdana</option>
+        </select>
+      </div>
+      <div>
+        <select id="font_size" style="width: 60px;">
+          <option value="10">10</option>
+          <option value="12">12</option>
+          <option value="14">14</option>
+          <option value="16">16</option>
+          <option value="18">18</option>
+          <option value="20">20</option>
+          <option value="22">22</option>
+          <option value="24">24</option>
+          <option value="26">26</option>
+          <option value="28">28</option>
+          <option value="30">30</option>
+        </select>
+        <div class="btn-group pull-right" data-toggle="buttons-checkbox">
+          <button class="btn" type="button" id="font_boldBtn">B</button>
+          <button class="btn" type="button" id="font_italicBtn">I</button>
+          <button class="btn" type="button" id="font_underlineBtn">U</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="btn-group pull-right">
   <button class="btn" id="save_img">Save</button>
   <button class="btn" id="clear_wb">Clear</button>
 </div>
 <textarea id="font_textarea" class="hide"></textarea>
-<div id="line_width" class="wb_toolbar_menu hide">
-  <div class="lw_bar" id="lw_1">
-    <div></div>
-  </div>
-  <div class="lw_bar" id="lw_3">
-    <div></div>
-  </div>
-  <div class="lw_bar" id="lw_5">
-    <div></div>
-  </div>
-  <div class="lw_bar" id="lw_8">
-    <div></div>
+<div id="line_width" class="popover fade right in" style="display: none;">
+  <div class="arrow"></div>
+  <div class="popover-inner">
+    <div class="popover-content">
+      <div class="lw_bar" id="lw_1">
+        <div></div>
+      </div>
+      <div class="lw_bar" id="lw_3">
+        <div></div>
+      </div>
+      <div class="lw_bar" id="lw_5">
+        <div></div>
+      </div>
+      <div class="lw_bar" id="lw_8">
+        <div></div>
+      </div>
+    </div>
   </div>
 </div>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>

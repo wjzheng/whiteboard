@@ -68,7 +68,7 @@
 
     _bindUI : function() {
       // bind event to toolbar buttons
-      TCC.find(".btn-group").delegate("click", "button", function(evt) {
+      TCC.find("#whiteboard").delegate("click", ".btn-group .btn", function(evt) {
         var target = evt.currentTarget;
         var menuId = target.attr("id");
         wb.beforeDraw(menuId);
@@ -92,8 +92,7 @@
           wb.activeOval(true);
           break;
         case "font":
-          $("#font_menu").popover('toggle');
-          //wb.activeFontSelector(target);
+          wb.activeFontSelector(target);
           break;
         case "eraser":
           wb.activeEraser();
@@ -228,10 +227,10 @@
       var that = this;
       var fontSelector = TCC.find("#font_menu");
       var textArea = TCC.find("#font_textarea");
-      var btnOffset = target.position();
+      var btnOffset = target.offset();
       fontSelector.css({
-        "left" : btnOffset.left + (this.options.toolbarPos === "left" ? target.width() + 6 : 0) + "px",
-        "top" : btnOffset.top + (this.options.toolbarPos === "bottom" ? target.height() + 6 : 0) + "px"
+        "left" : btnOffset.left + target.originalObj.outerWidth(true),
+        "top" : btnOffset.top + (target.originalObj.outerHeight(true) / 2) - fontSelector.originalObj.outerHeight(true) / 2
       });
       if (!fontSelector.isVisible()) {
         wb.canvas.on(EVT_START, function(event) {
@@ -268,10 +267,10 @@
       if (lwContainer.isVisible()) {
         lwContainer.hide();
       } else {
-        var btnOffset = target.position();
+        var btnOffset = target.offset();
         lwContainer.css({
-          "left" : btnOffset.left + (this.options.toolbarPos === "left" ? target.width() + 6 : 0) + "px",
-          "top" : btnOffset.top + (this.options.toolbarPos === "bottom" ? target.height() + 6 : 0) + "px"
+          "left" : btnOffset.left + target.originalObj.outerWidth(true),
+          "top" : btnOffset.top + (target.originalObj.outerHeight(true) / 2) - lwContainer.originalObj.outerHeight(true) / 2
         });
         TCC.find(".wb_toolbar_menu").hide();
         lwContainer.show();
