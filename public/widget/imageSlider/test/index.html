@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+<link rel="stylesheet" type="text/css" href="../css/imageSlider.css" />
+<script type="text/javascript" src="/js/libs/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="/js/libs/tccCommon-jquery.js"></script>
+<script type="text/javascript" src="/js/libs/tccWidgetBase.js"></script>
+<script type="text/javascript" src="testData.js"></script>
+<script type="text/javascript" src="../js/imageSlider.js"></script>
+</head>
+<body id="ccBody">
+  <div id="t1"></div>
+  <button id="ai">add item</button>
+  <button id="ri">remove item</button>
+  <br>
+  <button id="asi">add sub item</button>
+  <button id="rsi">remove sub item</button>
+  <br>
+  <button id="rs">resize</button>
+  <button id="r">refresh</button>
+  <script type="text/javascript">
+      TCC.ready("#ccBody", function() {
+        var imageListx = [ {
+          id : "1",
+          imageSrc : "/img/tool/chatroom/x.jpg",
+          tips : "美女1"
+        }, {
+          id : "2",
+          imageSrc : "/img/tool/chatroom/y.jpg",
+          tips : "美女2"
+        }, {
+          id : "3",
+          imageSrc : "/img/tool/chatroom/x.jpg",
+          tips : "美女3"
+        }, {
+          id : "4",
+          imageSrc : "/img/tool/chatroom/y.jpg",
+          tips : "美女4"
+        }, {
+          id : "5",
+          imageSrc : "/img/tool/chatroom/x.jpg",
+          tips : "美女5"
+        }, {
+          id : "6",
+          imageSrc : "/img/tool/chatroom/y.jpg"
+        }, {
+          id : "7",
+          imageSrc : "/img/tool/chatroom/x.jpg"
+        }, {
+          id : "8",
+          imageSrc : "/img/tool/chatroom/y.jpg"
+        }, {
+          id : "9",
+          imageSrc : "/img/tool/chatroom/x.jpg"
+        }, {
+          id : "10",
+          imageSrc : "/img/tool/chatroom/y.jpg"
+        }, {
+          id : "11",
+          imageSrc : "/img/tool/chatroom/x.jpg"
+        }, {
+          id : "12",
+          imageSrc : "/img/tool/chatroom/y.jpg"
+        }, {
+          id : "13",
+          imageSrc : "/img/tool/chatroom/x.jpg"
+        }, {
+          id : "14",
+          imageSrc : "/img/tool/chatroom/y.jpg"
+        } ];
+
+        TCC.find("#t1").imageSlider({
+          dataSource : imageList,
+          type : "multiLevel",
+          clickItemFn : function(itemId) {
+            console.log("itemId:" + itemId);
+          },
+          clickSubItemFn : function(parentId, subItemId) {
+            console.log("parentId:" + parentId + ",subItemId:" + subItemId);
+          }
+        });
+      })
+    </script>
+</body>
+</html>

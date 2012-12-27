@@ -30,7 +30,8 @@ function Square(a, b, c, d) {
   this.origin = centerSquareOrigin(a, b, c, d);
 
   this.intersect = function(mouse) {
-    return (!intersectWithLine(this.origin, mouse, this.a, this.b) && !intersectWithLine(this.origin, mouse, this.b, this.c) && !intersectWithLine(this.origin, mouse, this.c, this.d) && !intersectWithLine(this.origin, mouse, this.d, this.a));
+    return (!intersectWithLine(this.origin, mouse, this.a, this.b) && !intersectWithLine(this.origin, mouse, this.b, this.c) && !intersectWithLine(this.origin, mouse, this.c, this.d) && !intersectWithLine(
+        this.origin, mouse, this.d, this.a));
   }
 
   this.rotate = function(angle) {
@@ -121,4 +122,17 @@ function Square(a, b, c, d) {
 function intersect(width, height, left, top, mouseX, mouseY) {
   var square = new Square(new Vector(left, top), new Vector(left + width, top), new Vector(left + width, top + height), new Vector(left, top + height));
   return square.intersect(new Vector(mouseX, mouseY));
+}
+
+function isScalingArea(mX, mY, layer) {
+  var scaleOffsetX = layer.offsetX + layer.width;
+  var scaleOffsetY = layer.offsetY + layer.height;
+
+  var square = new Square(new Vector(scaleOffsetX - scaleImg.width, scaleOffsetY - scaleImg.height), new Vector(scaleOffsetX, scaleOffsetY - scaleImg.height), new Vector(scaleOffsetX, scaleOffsetY),
+      new Vector(scaleOffsetX - scaleImg.width, scaleOffsetY));
+
+  square.rotate(layer.angle);
+  square.alignBottomRight(layer.getSquare().c);
+
+  return square.intersect(new Vector(mX, mY));
 }

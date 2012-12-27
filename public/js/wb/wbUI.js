@@ -11,8 +11,6 @@
 
   window.wb = {
     options : {
-      fontSize : 16,
-      fontFamily : "Comic Sans MS",
       lineWidth : 3,
       color : "#000",
       eraserSize : 10,
@@ -23,10 +21,7 @@
       // tool bar position, left|bottom
       toolbarPos : "bottom",
       toolbarHeight : 41,
-      backgroundColor : "#fff",
-      // image position in the whiteboard,topLeft|center
-      imagePos : "topLeft",
-      moveImage : false
+      backgroundColor : "#fff"
     },
 
     init : function(wbId, options) {
@@ -37,7 +32,6 @@
       wbUndoManager.init(wb.options.undoSteps);
       this.wbContainer.show();
       this.wbOffset = this.wbContainer.find(".wbCanvas").offset();
-      this.wbPos = this.wbContainer.find(".wbCanvas").position();
     },
 
     _prepareParams : function(wbId, options) {
@@ -47,7 +41,6 @@
       this.wbId = wbId;
       this.canvas = TCC.find("#canvas_t");
       this.listener = [];
-      this.wbPos = null;
       this.wbOffset = null;
       this.lineWidth = wb.options.lineWidth;
       this.mouseDown = false;
@@ -67,6 +60,8 @@
     },
 
     _bindUI : function() {
+      // auto active pencil
+      wb.activePencil();
       // bind event to toolbar buttons
       TCC.find("#whiteboard").delegate("click", ".btn-group .btn", function(evt) {
         var target = evt.currentTarget;
@@ -118,7 +113,7 @@
         wb.changeLineWidth(lw);
         target.parent().find(".lw_bar.selected").removeClass("selected");
         target.addClass("selected");
-        target.parent().hide();
+        TCC.find("#line_width").hide();
       });
 
       // add shortcut key.
@@ -127,7 +122,7 @@
 
     initColorPicker : function() {
       TCC.find("#color").colorPicker({
-        parentContainer : wb.wbContainer,
+        parentContainer : "#mainArea",
         colorChangeFn : function(color) {
           wb.changeColor(color);
         }
@@ -138,53 +133,18 @@
     initFontSelector : function() {
       var that = this;
       var textArea = TCC.find("#font_textarea");
-      var defFontSize = wb.options.fontSize;
-      var defFontFamily = wb.options.fontFamily;
-      TCC.find("#font_size").val(defFontSize);
-      TCC.find("#font_family").val(defFontFamily);
-      TCC.find("#font_menu").delegate("click", "LI", function(evt) {
-        var target = evt.currentTarget;
-        target.toggleClass("active");
-        var id = target.attr("id");
-        if (id == "font_boldBtn") {
-          if (target.hasClass("active")) {
-            textArea.css("font-weight", "bold");
-          } else {
-            textArea.css("font-weight", "normal");
-          }
-        }
-        if (id == "font_italicBtn") {
-          if (target.hasClass("active")) {
-            textArea.css("font-style", "italic");
-          } else {
-            textArea.css("font-style", "normal");
-          }
-        }
-        if (id == "font_underlineBtn") {
-          if (target.hasClass("active")) {
-            textArea.css("text-decoration", "underline");
-          } else {
-            textArea.css("text-decoration", "none");
-          }
-        }
-      });
-
-      textArea.css({
-        "width" : wb.options.textareaSize[0] + "px",
-        "height" : wb.options.textareaSize[1] + "px",
-        "font-size" : defFontSize + "px",
-        "font-family" : defFontFamily
-      });
       // draw text on whiteboard
       textArea.on("blur", function(evt) {
         var target = evt.currentTarget;
         if (TCC.trim(target.val()) !== "") {
-          var left = parseInt(target.css("left")) - that.wbPos.left - 5;
-          var top = parseInt(target.css("top")) - that.wbPos.top + 12;
+          var left = parseInt(textArea.css("left")) - 9;
+          var top = parseInt(textArea.css("top")) + 9;
+          // draw text content on wb
           wb.beginDrawText(left, top);
+          // clear text content
+          target.val("");
+          target.hide();
         }
-        target.val("");
-        target.fadeOut();
       });
 
       // auto expand teaxarea height
@@ -234,24 +194,21 @@
       });
       if (!fontSelector.isVisible()) {
         wb.canvas.on(EVT_START, function(event) {
-          if (!textArea.isVisible()) {
+          if (!textArea.isVisible() || (textArea.isVisible() && TCC.trim(textArea.val()) == "")) {
             var coordinates = wb.getCoordinates(event);
-            var overflow = coordinates[0] + wb.options.textareaSize[0] - wb.options.width;
-            var left = coordinates[0] + that.wbPos.left;
-            if (overflow > 0) {
-              left = coordinates[0] - overflow;
-            }
             textArea.css({
-              "left" : left + "px",
-              "top" : coordinates[1] + that.wbPos.top + "px",
+              "left" : coordinates[0] + "px",
+              "top" : coordinates[1] + "px",
               "font-size" : parseInt(TCC.find("#font_size").val()) + "px",
               "font-family" : TCC.find("#font_family").val(),
-              "height" : that.options.textareaSize[1] + "px"
+              "font-weight" : TCC.find("#font_boldBtn").hasClass("active") ? "bold" : "normal",
+              "font-style" : TCC.find("#font_italicBtn").hasClass("active") ? "italic" : "normal",
+              "text-decoration" : TCC.find("#font_underlineBtn").hasClass("active") ? "underline" : "none"
             });
-            textArea.fadeIn(function() {
-              textArea.get(0).focus();
-              TCC.find("#font_menu").fadeOut();
+            textArea.fadeIn("fast", function() {
+              textArea.originalObj.focus();
             });
+            fontSelector.hide();
           }
         });
         fontSelector.show();
@@ -429,8 +386,9 @@
       if (menu && menu == selectedBtn.attr("id")) {
         return;
       }
-      TCC.find(".wb_toolbar_menu").hide();
-      TCC.find(".btn-group>button.btn").removeClass("active");
+      TCC.find("#font_textarea").hide();
+      TCC.find(".popover.in").hide();
+      TCC.find("#whiteboard .btn-group>button.btn").removeClass("active");
       TCC.find("#" + menu).addClass("active");
       wb.canvas.unbind();
       wb.canvas.removeClass(ERASER_ACTIVE);
@@ -465,10 +423,6 @@
     loadImage : function(imageSrc) {
       wb.beforeDraw();
       wbProcessor.drawImg(new wbRequests.DrawImageRequest(imageSrc));
-      // add move image event
-      if (wb.options.moveImage) {
-
-      }
       wbUndoManager.saveState();
     },
 

@@ -1,7 +1,10 @@
+<link rel="stylesheet" href="/widget/colorPicker/css/tccColorPicker.css">
+<link rel="stylesheet" href="/widget/imageSlider/css/imageSlider.css">
 <div class="well well-small" id="whiteboard">
   <div class="well well-small pull-right wbCanvas">
     <canvas id="canvas_o"></canvas>
     <canvas id="canvas_t" style="position: absolute; top: 9px; left: 9px;"></canvas>
+    <textarea id="font_textarea" autofocus="autofocus"></textarea>
   </div>
   <div class="btn-group btn-group-vertical">
     <button id="sketch" type="button" class="btn btn-small active">
@@ -31,9 +34,8 @@
     <button id="lineWidth" type="button" class="btn btn-small">
       <i class="wb-icon-lineWidth"></i>
     </button>
-    <button id="color" type="button" class="btn btn-small">
-      <i class="wb-icon-color"></i>
-    </button>
+    <a id="color" class="btn btn-small"> <i class="wb-icon-color"></i>
+    </a>
     <button id="undo" type="button" class="btn btn-small">
       <i class="wb-icon-undo"></i>
     </button>
@@ -43,45 +45,32 @@
   <div class="arrow"></div>
   <div class="popover-inner">
     <div class="popover-content">
-      <div>
-        <select id="font_family">
-          <option value="Arial Black">Arial Black</option>
-          <option value="Comic Sans MS">Comic Sans MS</option>
-          <option value="Courier">Courier</option>
-          <option value="System">System</option>
-          <option value="Times New Roman">Times New Roman</option>
-          <option value="Trebuchet MS">Trebuchet MS</option>
-          <option value="Verdana">Verdana</option>
-        </select>
-      </div>
-      <div>
-        <select id="font_size" style="width: 60px;">
-          <option value="10">10</option>
-          <option value="12">12</option>
-          <option value="14">14</option>
-          <option value="16">16</option>
-          <option value="18">18</option>
-          <option value="20">20</option>
-          <option value="22">22</option>
-          <option value="24">24</option>
-          <option value="26">26</option>
-          <option value="28">28</option>
-          <option value="30">30</option>
-        </select>
-        <div class="btn-group pull-right" data-toggle="buttons-checkbox">
-          <button class="btn" type="button" id="font_boldBtn">B</button>
-          <button class="btn" type="button" id="font_italicBtn">I</button>
-          <button class="btn" type="button" id="font_underlineBtn">U</button>
-        </div>
+      <select id="font_family">
+        <option value="Arial Black">Arial Black</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Courier">Courier</option>
+        <option value="System">System</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Trebuchet MS">Trebuchet MS</option>
+        <option value="Verdana">Verdana</option>
+      </select> <select id="font_size" style="width: 60px;">
+        <option value="16">16</option>
+        <option value="18">18</option>
+        <option value="20">20</option>
+        <option value="22">22</option>
+        <option value="24">24</option>
+        <option value="26">26</option>
+        <option value="28">28</option>
+        <option value="30">30</option>
+      </select>
+      <div class="btn-group pull-right" data-toggle="buttons-checkbox">
+        <button class="btn" type="button" id="font_boldBtn">B</button>
+        <button class="btn" type="button" id="font_italicBtn">I</button>
+        <button class="btn" type="button" id="font_underlineBtn">U</button>
       </div>
     </div>
   </div>
 </div>
-<div class="btn-group pull-right">
-  <button class="btn" id="save_img">Save</button>
-  <button class="btn" id="clear_wb">Clear</button>
-</div>
-<textarea id="font_textarea" class="hide"></textarea>
 <div id="line_width" class="popover fade right in" style="display: none;">
   <div class="arrow"></div>
   <div class="popover-inner">
@@ -101,10 +90,19 @@
     </div>
   </div>
 </div>
+<div class="well well-small" id="wbImgSlider"></div>
+<div class="btn-group pull-right">
+  <button class="btn" id="upload_img">Upload</button>
+  <button class="btn" id="save_img">Save</button>
+  <button class="btn" id="clear_wb">Clear</button>
+</div>
+<div id="uploadImageList" style="display: none;"></div>
+
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 <script TYPE="text/javascript" SRC="/js/libs/tccCommon-jquery.js"></script>
 <script TYPE="text/javascript" SRC="/js/libs/tccWidgetBase.js"></script>
 <script TYPE="text/javascript" SRC="/widget/colorPicker/js/tccColorPicker.js"></script>
+<script type="text/javascript" src="/widget/imageSlider/js/imageSlider.js"></script>
 <script type="text/javascript" src="/js/wb/base64.js"></script>
 <script type="text/javascript" src="/js/wb/canvas2image.js"></script>
 <script type="text/javascript" src="/js/wb/wbUtil.js"></script>
@@ -112,5 +110,16 @@
 <script type="text/javascript" src="/js/wb/wbProcessor.js"></script>
 <script type="text/javascript" src="/js/wb/wbUI.js"></script>
 <script type="text/javascript" src="/js/wb/wbMsgClient.js"></script>
+
+<script src="/widget/uploader/js/header.js"></script>
+<script src="/widget/uploader/js/util.js"></script>
+<script src="/widget/uploader/js/button.js"></script>
+<script src="/widget/uploader/js/handler.base.js"></script>
+<script src="/widget/uploader/js/handler.form.js"></script>
+<script src="/widget/uploader/js/handler.xhr.js"></script>
+<script src="/widget/uploader/js/uploader.basic.js"></script>
+<script src="/widget/uploader/js/dnd.js"></script>
+<script src="/widget/uploader/js/uploader.js"></script>
+
 <script type="text/javascript" src="/js/wb/wb.js"></script>
 

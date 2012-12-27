@@ -2,11 +2,66 @@ $(function() {
 
   var socket = io.connect();
   wb.init("#whiteboard", {
-    // width : 800,
-    // height : 320,
     imagePos : "center",
     toolbarPos : "left",
     moveImage : true
+  });
+
+  var imageList = [ {
+    id : "1",
+    imageSrc : "/img/tool/chatroom/x.jpg",
+    tips : "美女1"
+  }, {
+    id : "2",
+    imageSrc : "/img/tool/chatroom/y.jpg",
+    tips : "美女2"
+  }, {
+    id : "3",
+    imageSrc : "/img/tool/chatroom/x.jpg",
+    tips : "美女3"
+  }, {
+    id : "4",
+    imageSrc : "/img/tool/chatroom/y.jpg",
+    tips : "美女4"
+  }, {
+    id : "5",
+    imageSrc : "/img/tool/chatroom/x.jpg",
+    tips : "美女5"
+  }, {
+    id : "6",
+    imageSrc : "/img/tool/chatroom/y.jpg"
+  }, {
+    id : "7",
+    imageSrc : "/img/tool/chatroom/x.jpg"
+  }, {
+    id : "8",
+    imageSrc : "/img/tool/chatroom/y.jpg"
+  }, {
+    id : "9",
+    imageSrc : "/img/tool/chatroom/x.jpg"
+  }, {
+    id : "10",
+    imageSrc : "/img/tool/chatroom/y.jpg"
+  }, {
+    id : "11",
+    imageSrc : "/img/tool/chatroom/x.jpg"
+  }, {
+    id : "12",
+    imageSrc : "/img/tool/chatroom/y.jpg"
+  }, {
+    id : "13",
+    imageSrc : "/img/tool/chatroom/x.jpg"
+  }, {
+    id : "14",
+    imageSrc : "/img/tool/chatroom/y.jpg"
+  } ];
+
+  TCC.find("#wbImgSlider").imageSlider({
+    width : 1110,
+    dataSource : imageList,
+    clickItemFn : function(itemId) {
+      console.log("itemId:" + itemId);
+    }
   });
   // init wb client
   var username = $("#username").text();
@@ -42,26 +97,24 @@ $(function() {
   });
 
   // handle upload request
-  // var uploader = new qq.FineUploader({
-  // element : $('#uploadImg')[0],
-  // text : {
-  // uploadButton : "Upload image"
-  // },
-  // validation : {
-  // allowedExtensions : [ "jpg", "gif", "png", "bmp", "jpeg" ],
-  // sizeLimit : 5 * 1024 * 1024
-  // },
-  // listElement : $('#uploadImageList')[0],
-  // request : {
-  // endpoint : "/ajaxUploader"
-  // },
-  // callbacks : {
-  // onComplete : function(id, fileName, responseJSON) {
-  // wb.loadImage("/uploads/" + fileName);
-  // },
-  // onError : function(event, id, fileName, reason) {
-  // qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
-  // }
-  // }
-  // });
+  new qq.FineUploader({
+    element : $('#uploadImageList')[0],
+    multiple : false,
+    validation : {
+      allowedExtensions : [ "jpg", "gif", "png", "bmp", "jpeg" ],
+      sizeLimit : 5 * 1024 * 1024
+    },
+    request : {
+      endpoint : "/ajaxUploader"
+    },
+    callbacks : {
+      onComplete : function(id, fileName, responseJSON) {
+        wb.loadImage("/uploads/" + fileName);
+      },
+      onError : function(event, id, fileName, reason) {
+        qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+      }
+    },
+    button : $('#upload_img')[0]
+  });
 });

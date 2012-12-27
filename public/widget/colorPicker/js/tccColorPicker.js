@@ -1,7 +1,7 @@
 (function(TCC) {
 
   var TPL = {
-    colorPickerContainer : "<div class='colorPicker'></div>",
+    colorPickerContainer : "<div class='colorPicker popover fade right in'><div class='arrow'></div><div class='popover-inner'><div class='popover-content'></div></div></div>",
     colorItem : "<li><a href='javascript:void(0);' style='background:{$color}' color='{$color}'></a></li>"
   };
 
@@ -17,27 +17,24 @@
     _init : function() {
       var that = this;
       var wId = this.getWId();
-      if (!that.options.parentContainer) {
-        this.on("click", function(evt) {
-          var cp = TCC.find(".colorPicker." + wId);
-          if (typeof that.options.clickFn === "function") {
-            that.options.clickFn.call(that, cp, evt.currentTarget);
+      this.on("click", function(evt) {
+        var cp = TCC.find(".colorPicker." + wId);
+        if (typeof that.options.clickFn === "function") {
+          that.options.clickFn.call(that, cp, evt.currentTarget);
+        } else {
+          if (cp.isVisible()) {
+            cp.hide();
           } else {
-            if (cp.isVisible()) {
-              cp.hide();
-            } else {
-              var target = evt.currentTarget;
-              var offset = target.offset();
-              cp.css({
-                position : "absolute",
-                left : offset.left + "px",
-                top : offset.top + target.height() + 6 + "px"
-              });
-              cp.show();
-            }
+            var target = evt.currentTarget;
+            var offset = target.offset();
+            cp.css({
+              left : offset.left + target.originalObj.outerWidth(true) + "px",
+              top : offset.top + target.originalObj.outerWidth(true) / 2 - cp.originalObj.outerHeight(true) / 2 + "px",
+            });
+            cp.show();
           }
-        });
-      }
+        }
+      });
 
       TCC.find(".colorPicker." + wId).delegate("click", "LI A", function(evt) {
         var target = evt.currentTarget;
@@ -46,7 +43,10 @@
         if (color !== origColor && that.options.colorChangeFn !== null) {
           that.options.colorChangeFn.call(that, color);
         }
-        that.css("background-color", color);
+        that.css({
+          backgroundColor : color,
+          backgroundImage : "none"
+        });
         that.attr("color", color);
         that.destroy();
       });
@@ -61,13 +61,13 @@
       }
       colorConent = colorConent.join("");
       colorConent = "<ul>" + colorConent + "</ul>";
-      colorPickerContainer.appendChild(colorConent);
+      colorPickerContainer.find(".popover-content").appendChild(colorConent);
       colorPickerContainer.hide();
 
       var wId = this.getWId();
       colorPickerContainer.addClass(wId);
       if (this.options.parentContainer) {
-        this.options.parentContainer.appendChild(colorPickerContainer);
+        TCC.find(this.options.parentContainer).appendChild(colorPickerContainer);
       } else {
         TCC.find(document.body).appendChild(colorPickerContainer);
       }

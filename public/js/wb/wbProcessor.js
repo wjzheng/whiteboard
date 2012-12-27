@@ -237,12 +237,7 @@
         var width = image.width, height = image.height;
         var imageSize = wbProcessor.adjustImageSize(width, height);
         wbProcessor.clearCanvas();
-        // draw image to canvas
-        if (wb.options.imagePos === "center") {
-          wbProcessor.context_O.drawImage(image, imageSize.left, imageSize.top, imageSize.width, imageSize.height);
-        } else {
-          wbProcessor.context_O.drawImage(image, 0, 0, imageSize.width, imageSize.height);
-        }
+        wbProcessor.context_O.drawImage(image, imageSize.left, imageSize.top, imageSize.width, imageSize.height);
         // bind image move event
         if (wb.options.moveImage) {
           var coordinates = [ 0, 0 ];
@@ -255,6 +250,8 @@
               wb.canvas.addClass(MOVE_IMG);
               if (wb.mouseDown) {
                 wbProcessor.moveImage(new wbRequests.MoveImageRequest(mousePrevX, mousePrevY, coordinates[0], coordinates[1]));
+                imageSize.left = wbProcessor.currentImage.left;
+                imageSize.top = wbProcessor.currentImage.top;
               }
               mousePrevX = coordinates[0], mousePrevY = coordinates[1];
             } else {
@@ -286,6 +283,26 @@
       image.src = imageSrc;
     },
 
+    _drawMark : function(imageSize) {
+      if (!wb.hasDrawMark) {
+        wb.hasDrawMark = true;
+        wbProcessor.context_O.save();
+        wbProcessor.context_O.lineWidth = 2;
+        wbProcessor.context_O.strokeStyle = "#FEA11C";
+        // add mouse over mark
+        wbProcessor.context_O.strokeRect(imageSize.left, imageSize.top, imageSize.width, imageSize.height);
+      }
+    },
+
+    _redraw : function() {
+      if (wb.hasDrawMark) {
+        wbProcessor.clearCanvas();
+        var currentImg = wbProcessor.currentImage;
+        wbProcessor.context_O.drawImage(currentImg.image, currentImg.left, currentImg.top, currentImg.width, currentImg.height);
+        wb.hasDrawMark = false;
+      }
+    },
+
     adjustImageSize : function(width, height) {
       var imgWidth = width;
       var imgHeight = height;
@@ -306,7 +323,7 @@
         }
       }
       if (imgHeight > canvasHeight) {
-        imageSize.height = canvasHeight;
+        imageSize.height = canvasHeight - 4;
         if (wb.options.keepImageProportions) {
           imageSize.width = Math.floor((canvasHeight / imgHeight) * imgWidth);
         } else {
