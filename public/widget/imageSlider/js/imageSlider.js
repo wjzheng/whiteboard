@@ -17,7 +17,7 @@
 
     // default options
     options : {
-      dataSource : null,
+      dataSource : [],
       type : TYPE.normal,
       width : 800,
       height : 82,
@@ -30,13 +30,8 @@
       subItemBorderWidth : 2,
       ctlBtnWidth : 20,
       primaryId : "id",
-
       clickItemFn : null,
       clickSubItemFn : null,
-
-      showTips : false,
-      // tip-yellow,tip-darkgray
-      tipStyle : "tip-yellow"
     },
 
     _prepareParams : function() {
@@ -48,7 +43,6 @@
       this.imageItemFullWidth = this.options.itemWidth + 2 * this.options.itemBorderWidth;
       this.isScrolling = false;
       this.currentSubList = null;
-      this.tipsContent = {};
     },
 
     // render UI
@@ -68,11 +62,6 @@
       this.imageContainer = this.children(".imageContainer");
       this.imageHolder = this.imageContainer.children(".imageHolder");
 
-      this.imageContainer.css({
-        "width" : that._getContainerWidth() + "px",
-        "height" : that.options.height + "px"
-      });
-
       // append images to container
       TCC.each(this.options.dataSource, function(index, item) {
         var imageItem = that._genImageItem(item);
@@ -86,7 +75,11 @@
     },
 
     _getContainerWidth : function() {
+      var ctlBtn = this.find(".sliderCtlBtn");
       var width = this.width();
+      ctlBtn.each(function(item) {
+        width = width - $(item).outerWidth(true);
+      })
       this.imageContainerWidth = width;
       return width;
     },
@@ -170,7 +163,7 @@
       var createBtn = false;
       if (this.options.type === TYPE.normal) {
         var totalWidth = this._getTotalWidth();
-        if (totalWidth > this.imageContainerWidth) {
+        if (totalWidth > this.options.width) {
           createBtn = true;
         }
       } else {
@@ -180,17 +173,18 @@
         if (this.find(".sliderCtlBtn").length == 0) {
           this.prepend(TPL.leftCtlBtn);
           this.appendChild(TPL.rightCtlBtn);
-          this.css("width", this.options.width + this.options.ctlBtnWidth * 2 + "px");
         } else {
           this.find(".sliderCtlBtn").show();
-          this.css("width", this.options.width + this.options.ctlBtnWidth * 2 + "px");
         }
       } else {
         if (this.find(".sliderCtlBtn").length > 0) {
           this.find(".sliderCtlBtn").hide();
-          this.css("width", this.options.width + "px");
         }
       }
+      this.imageContainer.css({
+        "width" : this._getContainerWidth() + "px",
+        "height" : this.options.height + "px"
+      });
     },
 
     // bind events to imageSlider
@@ -239,23 +233,6 @@
 
     },
 
-    _getTipsContent : function(id) {
-      var that = this;
-      TCC.each(this.options.dataSource, function(idx, item) {
-        if (id == item[that.options.primaryId]) {
-          that.tipsContent[id] = item.tips || id;
-        }
-        if (item.subs) {
-          TCC.each(item.subs, function(idx, subItem) {
-            if (id == subItem[that.options.primaryId]) {
-              that.tipsContent[id] = subItem.tips || id;
-            }
-          });
-        }
-      })
-      return this.tipsContent[id];
-    },
-
     _init : function() {
       // auto click the first image item
       if (this.options.autoClick) {
@@ -268,7 +245,9 @@
         }
       }
       // show imageSlider after finished event bind
-      this.show();
+      if (this.options.dataSource && this.options.dataSource.length > 0) {
+        this.show();
+      }
       this._trigger("eventShowed");
     },
 
@@ -362,6 +341,7 @@
       if (!imageSrc) {
         return false;
       }
+      this.show();
       // add subItem to data source
       this.options.dataSource.push(itemObj);
       var imageItem = TCC.create(TPL.imageItem1.replace("${imageSrc}", imageSrc));
@@ -501,7 +481,6 @@
       if (dataSource.length > 0) {
         this.imageItemCount = 0;
         if (this.options.type === TYPE.normal) {
-          this._destroyTips();
           this.imageHolder.clear();
           TCC.each(dataSource, function(index, item) {
             var imageItem = that._genImageItem(item);
@@ -517,12 +496,6 @@
         }
       } else {
         this.imageHolder.clear();
-      }
-    },
-
-    _destroyTips : function() {
-      if (this.options.showTips === true) {
-        this.imageContainer.find(".imageItem,.subImageItem,.parentImageThumb").originalObj.poshytip("destroy");
       }
     },
 

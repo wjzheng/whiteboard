@@ -22,7 +22,7 @@ exports.initWbMsgServer = function(io) {
     });
 
     // handle save image request
-    socket.on('save_image', function(imageContent) {
+    socket.on('save_image', function(imageContent, callbackFN) {
       var username = this.username;
       var base64Data = imageContent.replace(/^data:image\/png;base64,/, "");
       var imageFolder = "./public/files/" + username + "/wb/";
@@ -38,21 +38,13 @@ exports.initWbMsgServer = function(io) {
             width : 110,
             height : 62
           }, function(err, stdout, stderr) {
-            if (err) {
-              socket.emit('save_img_response', {
-                err : "resize image exception!"
-              });
-            } else {
-              socket.emit('save_img_response', {
-                thumbnailPath : "/files/" + username + "/wb/" + imageCount + "-small.png",
-                imagePath : "/files/" + username + "/wb/" + imageCount + ".png"
-              });
-            }
+            callbackFN(err, {
+              imageId : imageCount,
+              thumbnailPath : "/files/" + username + "/wb/" + imageCount + "-small.png"
+            })
           });
         } else {
-          socket.emit('save_img_response', {
-            err : "save image exception!"
-          });
+          callbackFN("save image exception!");
         }
       });
     });

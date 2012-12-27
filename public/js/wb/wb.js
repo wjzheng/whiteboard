@@ -1,69 +1,22 @@
 $(function() {
-
+  // init socket client
   var socket = io.connect();
+  // init whiteboard
   wb.init("#whiteboard", {
     imagePos : "center",
     toolbarPos : "left",
     moveImage : true
   });
-
-  var imageList = [ {
-    id : "1",
-    imageSrc : "/img/tool/chatroom/x.jpg",
-    tips : "美女1"
-  }, {
-    id : "2",
-    imageSrc : "/img/tool/chatroom/y.jpg",
-    tips : "美女2"
-  }, {
-    id : "3",
-    imageSrc : "/img/tool/chatroom/x.jpg",
-    tips : "美女3"
-  }, {
-    id : "4",
-    imageSrc : "/img/tool/chatroom/y.jpg",
-    tips : "美女4"
-  }, {
-    id : "5",
-    imageSrc : "/img/tool/chatroom/x.jpg",
-    tips : "美女5"
-  }, {
-    id : "6",
-    imageSrc : "/img/tool/chatroom/y.jpg"
-  }, {
-    id : "7",
-    imageSrc : "/img/tool/chatroom/x.jpg"
-  }, {
-    id : "8",
-    imageSrc : "/img/tool/chatroom/y.jpg"
-  }, {
-    id : "9",
-    imageSrc : "/img/tool/chatroom/x.jpg"
-  }, {
-    id : "10",
-    imageSrc : "/img/tool/chatroom/y.jpg"
-  }, {
-    id : "11",
-    imageSrc : "/img/tool/chatroom/x.jpg"
-  }, {
-    id : "12",
-    imageSrc : "/img/tool/chatroom/y.jpg"
-  }, {
-    id : "13",
-    imageSrc : "/img/tool/chatroom/x.jpg"
-  }, {
-    id : "14",
-    imageSrc : "/img/tool/chatroom/y.jpg"
-  } ];
-
+  // init image slider
   TCC.find("#wbImgSlider").imageSlider({
-    width : 1110,
-    dataSource : imageList,
+    width : $("#whiteboard").width(),
     clickItemFn : function(itemId) {
-      console.log("itemId:" + itemId);
+      var imagePath = "/files/wb/" + itemId + ".png";
+      wb.loadImage(imagePath);
     }
   });
-  // init wb client
+  
+  // init wb mesage client
   var username = $("#username").text();
   wbMsgClient.init(socket, username);
 
@@ -87,7 +40,19 @@ $(function() {
   // save image
   $("#save_img").click(function(evt) {
     var imageContent = wb.getImage();
-    wbMsgClient.saveImage(imageContent);
+    wbMsgClient.saveImage(imageContent, function(err, response) {
+      if (!err) {
+        // add image item to image slider
+        var imageId = response.imageId;
+        var thumbnailPath = response.thumbnailPath;
+        TCC.find("#wbImgSlider").imageSlider("addItem", {
+          id : imageId,
+          imageSrc : thumbnailPath
+        });
+      } else {
+        alert(err);
+      }
+    });
   });
 
   // click image

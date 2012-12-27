@@ -29,17 +29,6 @@
       this.socket.on('wb_server_msg', function(data) {
         that.handleMsg(data.from, data.data);
       });
-      this.socket.on('save_img_response', function(data) {
-        if (!data.err) {
-          var filePath = data.imagePath;
-          var thumbnailPath = data.thumbnailPath;
-          var imageNode = $("<div class='imageItem'><img src='" + data.thumbnailPath + "'/></div>");
-          imageNode.data("filePath", filePath);
-          $("#wb_images").append(imageNode);
-        } else {
-          // show err msg
-        }
-      });
     },
 
     // send requests to serverside
@@ -47,7 +36,7 @@
       if (req.isRemote) {
         return;
       }
-      this.socket.emit('wb_client_msg', req);
+      this.socket && this.socket.emit('wb_client_msg', req);
     },
 
     // handle response from server side
@@ -269,8 +258,8 @@
       return ret;
     },
 
-    saveImage : function(imageContent) {
-      this.socket.emit('save_image', imageContent.src);
+    saveImage : function(imageContent, callbackFN) {
+      this.socket.emit('save_image', imageContent.src, callbackFN);
     }
   };
 })();
